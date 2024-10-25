@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
@@ -7,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -15,7 +15,6 @@ class AuthController extends Controller
         try {
             $input = $request->all();
             $validator = Validator::make($input, [
-                "name" => "required|string|max:255",
                 "email" => "required|email",
                 "password" => "required|min:6"
             ]);
@@ -34,7 +33,7 @@ class AuthController extends Controller
 
                 return response()->json([
                     "status" => true,
-                    "message" => "connecter avec succès",
+                    "message" => "Connecté avec succès",
                     "token" => $token,
                     "user" => $user
                 ], 200);
@@ -42,7 +41,7 @@ class AuthController extends Controller
 
             return response()->json([
                 "status" => false,
-                "message" => "Invalid credentials"
+                "message" => "Identifiants invalides"
             ], 401); // Code 401 pour une authentification échouée
         } catch (\Throwable $th) {
             return response()->json([
@@ -52,15 +51,15 @@ class AuthController extends Controller
         }
     }
 
-  
     public function register(Request $request)
     {
         try {
             $input = $request->all();
             $validator = Validator::make($input, [
-                "name" => "required|string|max:255",
+                "nom" => "required|string|max:255", // Champ pour le nom
+                "prenom" => "required|string|max:255", // Champ pour le prénom
                 "email" => "required|email|unique:users,email",
-                "password" => "required|min:6|confirmed", 
+                "password" => "required|min:6|confirmed",
             ]);
     
             if ($validator->fails()) {
@@ -70,10 +69,10 @@ class AuthController extends Controller
                 ], 422);
             }
             
-    
             // Créer un nouvel utilisateur
             $user = User::create([
-                'name' => $input['name'],
+                'nom' => $input['nom'], // Enregistrer le nom
+                'prenom' => $input['prenom'], // Enregistrer le prénom
                 'email' => $input['email'],
                 'password' => bcrypt($input['password']), 
             ]);
@@ -99,6 +98,6 @@ class AuthController extends Controller
     {
         $request->user()->tokens()->delete();
 
-        return response()->json(['message' => 'Logged out successfully'], 200);
+        return response()->json(['message' => 'Déconnecté avec succès'], 200);
     }
 }
