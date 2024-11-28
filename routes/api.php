@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\API\AuthAgricooController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -32,3 +32,11 @@ Route::prefix('auth')->group(function () {
     Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
     Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
 });
+
+// Routes pour l'authentification Agricoo
+Route::prefix('auth/agricoo')->group(function () {
+    Route::post('register', [AuthAgricooController::class, 'register']);
+    Route::post('login', [AuthAgricooController::class, 'login']);
+    Route::post('logout', [AuthAgricooController::class, 'logout'])->middleware('auth:sanctum');
+});
+
